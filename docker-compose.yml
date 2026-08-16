@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: ./00-backend
+    environment:
+      HIVEMIND_OLLAMA_URL: ${HIVEMIND_OLLAMA_URL:-http://host.docker.internal:11434}
+      HIVEMIND_LMSTUDIO_URL: ${HIVEMIND_LMSTUDIO_URL:-http://host.docker.internal:1234/v1}
+      HIVEMIND_TITLE_MODEL: ${HIVEMIND_TITLE_MODEL:-qwen2.5:7b}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./data:/data
+    ports:
+      - "${HIVEMIND_BACKEND_PORT:-8000}:8000"
+    restart: unless-stopped
+
+  frontend:
+    build: ./01-frontend
+    depends_on:
+      - backend
+    ports:
+      - "${HIVEMIND_WEB_PORT:-5173}:80"
+    restart: unless-stopped

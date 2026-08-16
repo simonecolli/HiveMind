@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+/* Cold graphite with a cyan signal.
+   The neutrals lean blue rather than neutral-grey: an accent this cold reads as
+   dirt over warm ones. Agents are told apart by quiet markers, not by a rainbow,
+   and the signal colour stays on thin things - rules, active edges, small marks -
+   never on large fills, where cyan on black turns into a screensaver. */
+@theme {
+  --color-ink: #0b0e12;
+  --color-surface: #121821;
+  --color-raised: #18202b;
+  --color-line: #232d3a;
+  --color-line-bright: #35434f;
+  --color-paper: #e3eaf2;
+  --color-muted: #8a98a8;
+  --color-faint: #5b6675;
+
+  --color-signal: #3ddceb;
+  --color-violet: #8b7bf7;
+  --color-sky: #7dd3fc;
+  --color-pink: #f472b6;
+  /* Trouble needs its own colour. On the warm palette the accent doubled as a
+     warning; a cyan one cannot, because it reads as information. */
+  --color-alert: #ff5470;
+
+  /* Chrome in sans and mono, agent prose in serif: it separates the
+     tool from what the tool produces. */
+  --font-sans: ui-sans-serif, -apple-system, "SF Pro Text", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --font-read: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Film-edge marking: small, letterspaced, uppercase. */
+.edge-mark {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Sprocket holes: the left edge of a strip of film. */
+.sprockets {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--color-line) 0 6px,
+    transparent 6px 14px
+  );
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+}
+
+.caret::after {
+  content: "";
+  display: inline-block;
+  width: 0.5em;
+  height: 1em;
+  margin-left: 0.15em;
+  vertical-align: -0.15em;
+  background-color: var(--color-signal);
+  animation: blink 1.1s step-end infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.rise {
+  animation: rise 0.28s ease-out both;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-line);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

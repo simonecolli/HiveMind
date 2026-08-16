@@ -1,0 +1,8 @@
+.DS_Store
+*.log
+
+# Browser-automation scratch output.
+.playwright-mcp/
+
+# Working design notes, not part of the published project.
+docs/hive.md

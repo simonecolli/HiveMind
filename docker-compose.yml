@@ -4,6 +4,8 @@ services:
     environment:
       HIVEMIND_OLLAMA_URL: ${HIVEMIND_OLLAMA_URL:-http://host.docker.internal:11434}
       HIVEMIND_LMSTUDIO_URL: ${HIVEMIND_LMSTUDIO_URL:-http://host.docker.internal:1234/v1}
+      HIVEMIND_LMSTUDIO_API_KEY: ${HIVEMIND_LMSTUDIO_API_KEY:-lm-studio}
+      HIVEMIND_LMSTUDIO_HEADERS: ${HIVEMIND_LMSTUDIO_HEADERS:-}
       HIVEMIND_TITLE_MODEL: ${HIVEMIND_TITLE_MODEL:-qwen2.5:7b}
     extra_hosts:
       - "host.docker.internal:host-gateway"

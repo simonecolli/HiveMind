@@ -30,7 +30,11 @@ def build_app(settings: Settings | None = None) -> FastAPI:
                 thinking=settings.ollama_thinking
             ),
             LMStudioProvider(
-                settings.lmstudio_url, http, max_output_tokens=settings.max_output_tokens
+                settings.lmstudio_url,
+                http,
+                max_output_tokens=settings.max_output_tokens,
+                api_key=settings.lmstudio_api_key,
+                headers=settings.lmstudio_header_dict,
             ),
         ]
     )

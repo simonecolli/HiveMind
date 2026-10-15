@@ -56,12 +56,16 @@ class _HttpProvider:
         temperature: float = DEFAULT_TEMPERATURE,
         max_output_tokens: int = DEFAULT_MAX_OUTPUT_TOKENS,
         thinking: bool = False,
+        headers: dict[str, str] | None = None,
     ) -> None:
         self.base_url = base_url.rstrip("/")
         self._http = http
         self._temperature = temperature
         self._max_output_tokens = max_output_tokens
         self._thinking = thinking
+        # Extra headers for engines that need them (a hosted gateway, say);
+        # a local server simply never sees any.
+        self._headers = headers or {}
 
     def _cap(self, max_tokens: int | None) -> int:
         """Never unbounded: an unasked-for cap still lands on the ceiling."""
@@ -121,15 +125,23 @@ class OllamaProvider(_HttpProvider):
 class LMStudioProvider(_HttpProvider):
     """LM Studio serves the OpenAI API, so the OpenAI client drives it.
 
-    The key is required by the client and ignored by LM Studio: nothing leaves
-    this machine.
+    The client requires a key and LM Studio ignores it, so the default is a
+    dummy. Point this engine at any OpenAI-compatible endpoint - a hosted
+    gateway included - by configuring the URL, a real key and any extra headers
+    it demands (see HIVEMIND_LMSTUDIO_API_KEY / HIVEMIND_LMSTUDIO_HEADERS).
     """
 
     name = "lmstudio"
     label = "LM Studio"
 
+    def __init__(self, *args, api_key: str = "lm-studio", **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self._api_key = api_key
+
     async def list_models(self) -> list[str]:
-        response = await self._http.get(f"{self.base_url}/models")
+        response = await self._http.get(
+            f"{self.base_url}/models", headers=self._headers or None
+        )
         response.raise_for_status()
         return [model["id"] for model in response.json().get("data", [])]
 
@@ -145,7 +157,8 @@ class LMStudioProvider(_HttpProvider):
         return ChatOpenAI(
             model=model,
             base_url=self.base_url,
-            api_key="lm-studio",
+            api_key=self._api_key,
+            default_headers=self._headers or None,
             temperature=self._temperature if temperature is None else temperature,
             max_tokens=self._cap(options.max_tokens),
         )
